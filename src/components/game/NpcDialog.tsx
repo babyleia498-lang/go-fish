@@ -8,6 +8,7 @@ import { sellFish } from "@/lib/profile.functions";
 import { useInventoryStore } from "@/hooks/useInventoryStore";
 import { RodShop } from "./RodShop";
 import { BaitShop } from "./BaitShop";
+import { BoatShop } from "./BoatShop";
 
 function speciesName(id: string) {
   return getFishData().species.find((s) => s.id === id)?.name ?? id;
@@ -21,7 +22,7 @@ export function NpcDialog() {
   const profile = useProfileStore((s) => s.profile);
   const setProfile = useProfileStore((s) => s.setProfile);
 
-  const [stage, setStage] = useState<"greeting" | "sell" | "talk" | "rods" | "baits">("greeting");
+  const [stage, setStage] = useState<"greeting" | "sell" | "talk" | "rods" | "baits" | "boats">("greeting");
   const items = useInventoryStore((s) => s.items);
   const loading = useInventoryStore((s) => s.loading);
   const refreshInventory = useInventoryStore((s) => s.refresh);
@@ -32,6 +33,7 @@ export function NpcDialog() {
   const trades = !!npc?.trades;
   const sellsRods = !!npc?.sellsRods;
   const sellsBaits = !!npc?.sellsBaits;
+  const sellsBoats = !!npc?.sellsBoats;
 
   const refresh = useCallback(async () => {
     if (!proof || !trades) return;
@@ -88,7 +90,7 @@ export function NpcDialog() {
     <div className="pointer-events-auto fixed inset-0 z-50 flex items-end justify-center bg-slate-950/40 p-4 pb-10 backdrop-blur-[2px]">
       <div
         className={`w-full overflow-hidden rounded-2xl border border-white/15 bg-slate-900/90 shadow-2xl ${
-          stage === "rods" || stage === "baits" ? "max-w-3xl" : "max-w-xl"
+          stage === "rods" || stage === "baits" || stage === "boats" ? "max-w-3xl" : "max-w-xl"
         }`}
       >
         <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
@@ -122,6 +124,8 @@ export function NpcDialog() {
         <div className="max-h-[46vh] overflow-y-auto px-4 py-4">
           {stage === "rods" ? (
             <RodShop />
+          ) : stage === "boats" ? (
+            <BoatShop />
           ) : stage === "baits" ? (
             <BaitShop />
           ) : stage === "talk" ? (
@@ -218,6 +222,15 @@ export function NpcDialog() {
               className="rounded-lg bg-amber-400/90 px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-amber-300"
             >
               Browse baits
+            </button>
+          )}
+          {sellsBoats && stage !== "boats" && (
+            <button
+              type="button"
+              onClick={() => setStage("boats")}
+              className="rounded-lg bg-amber-400/90 px-3 py-1.5 text-xs font-semibold text-slate-900 transition-colors hover:bg-amber-300"
+            >
+              Browse boats
             </button>
           )}
           {trades && stage !== "sell" && (
