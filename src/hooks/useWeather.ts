@@ -74,7 +74,7 @@ export const WEATHER: Record<WeatherKind, WeatherPreset> = {
     skySaturation: 1,
     sunPosition: [22, 12, 20],
     fogColor: "#b8d4e8",
-    fogDensity: 0.005, // 5 unit kabut / 1000
+    fogDensity: 0.003, // 3 unit kabut / 1000
     ambient: 0.5,
     hemi: 0.6,
     sun: 1.1,
@@ -100,7 +100,7 @@ export const WEATHER: Record<WeatherKind, WeatherPreset> = {
     skySaturation: 1,
     sunPosition: [18, 8, 22],
     fogColor: "#c9e0f0",
-    fogDensity: 0.015, // 15 unit kabut / 1000
+    fogDensity: 0.006, // 6 unit kabut / 1000
     ambient: 0.72,
     hemi: 0.8,
     sun: 0.6,
@@ -126,7 +126,7 @@ export const WEATHER: Record<WeatherKind, WeatherPreset> = {
     skySaturation: 1,
     sunPosition: [14, 7, 24],
     fogColor: "#8aaec6",
-    fogDensity: 0.004, // 4 unit kabut / 1000
+    fogDensity: 0.003, // 3 unit kabut / 1000
     ambient: 0.42,
     hemi: 0.5,
     sun: 0.55,
@@ -152,7 +152,7 @@ export const WEATHER: Record<WeatherKind, WeatherPreset> = {
     skySaturation: 1,
     sunPosition: [8, 4, 26],
     fogColor: "#526b7d",
-    fogDensity: 0.008, // 8 unit kabut / 1000
+    fogDensity: 0.005, // 5 unit kabut / 1000
     ambient: 0.3,
     hemi: 0.35,
     sun: 0.35,

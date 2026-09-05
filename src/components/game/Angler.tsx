@@ -830,17 +830,13 @@ export function Angler() {
     }
     const isMonster = !!st.fish?.isMonster;
     if (hooked.current) {
-      const show = (st.phase === "reel" || st.phase === "caught") && !isMonster;
+      const show = st.phase === "caught" && !isMonster;
       hooked.current.visible = show;
       if (show) {
         hooked.current.position.copy(st.bobber);
         hooked.current.position.y -= 0.35;
-        if (st.phase === "reel") {
-          hooked.current.rotation.set(Math.sin(t * 18) * 0.35, Math.PI, Math.sin(t * 14) * 0.5);
-        } else {
-          // dangling and flopping in the air
-          hooked.current.rotation.set(0, Math.PI * 0.5, -Math.PI / 2 + Math.sin(t * 12) * 0.55);
-        }
+        // dangling and flopping in the air
+        hooked.current.rotation.set(0, Math.PI * 0.5, -Math.PI / 2 + Math.sin(t * 12) * 0.55);
       }
     }
     // ---- monster raksasa: diangkat epik mengikuti senar ----------
@@ -1282,7 +1278,7 @@ export function Angler() {
 
       {/* monster raksasa saat tertangkap */}
       <group ref={monster} visible={false}>
-        <MonsterFishMesh scale={MONSTER_SCALE} jawOpen={0.85} wagSpeed={1.4} />
+        <MonsterFishMesh scale={MONSTER_SCALE} wagSpeed={1.4} />
       </group>
 
       {/* splash */}
