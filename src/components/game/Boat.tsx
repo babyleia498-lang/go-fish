@@ -11,7 +11,7 @@ import { boatLook } from "@/lib/boatModels";
 
 /** Equipped hull, auto-centred, auto-scaled and laid bow-forward (+z). */
 function BoatModel({ url, targetLength }: { url: string; targetLength: number }) {
-  const { scene } = useGLTF(url);
+  const { scene } = useGLTF(url, "/draco/");
   const model = useMemo(() => {
     const TARGET_LENGTH = targetLength;
     const root = scene.clone(true);
@@ -51,7 +51,17 @@ function BoatModel({ url, targetLength }: { url: string; targetLength: number })
     // keep the hull bottom just above the waterline so the sea never shows inside
     wrapper.position.y = -size.y * s * 0.05;
     // seat the rider on the interior floor
-    BOAT_SEAT.y = wrapper.position.y + size.y * s * 0.14;
+    const deckY = wrapper.position.y + size.y * s * 0.14;
+    BOAT_SEAT.y = deckY;
+    // walkable deck box measured from the hull footprint (keep clear of the rails)
+    const beam = (alongX ? size.z : size.x) * s;
+    const hullLen = TARGET_LENGTH;
+    boat.deck.halfX = Math.max(0.5, (beam / 2) * 0.55) / BOAT_SCALE;
+    boat.deck.halfZ = Math.max(0.9, (hullLen / 2) * 0.6) / BOAT_SCALE;
+    boat.deck.y = deckY;
+    // helm sits toward the stern; keep it inside the deck box
+    BOAT_SEAT.z = -boat.deck.halfZ * 0.55;
+    resetDeckOffset();
     return wrapper;
   }, [scene, targetLength]);
 
