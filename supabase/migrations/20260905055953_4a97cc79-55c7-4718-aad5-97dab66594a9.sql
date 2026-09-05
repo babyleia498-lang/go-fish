@@ -1,0 +1,18 @@
+REVOKE EXECUTE ON FUNCTION public.buy_bait(text, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.buy_rod(text, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.ensure_starter_gear(text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.equip_bait(text, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.equip_rod(text, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_player_baits(text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_player_rods(text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.record_catch(text, text, text, numeric, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.sell_fish(text, uuid, text, boolean) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.buy_bait(text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.buy_rod(text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.ensure_starter_gear(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.equip_bait(text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.equip_rod(text, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.get_player_baits(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.get_player_rods(text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.record_catch(text, text, text, numeric, text) TO service_role;
+GRANT EXECUTE ON FUNCTION public.sell_fish(text, uuid, text, boolean) TO service_role;
