@@ -1,11 +1,11 @@
 {
-  "asset_id": "4bf72597-38c0-4c2b-b1d6-8a5c4c102cf0",
-  "content_type": "model/gltf-binary",
-  "created_at": "2026-09-05T07:25:17Z",
+  "version": 1,
+  "asset_id": "99ab27b0-a376-476a-8ea7-9de0bfa7da33",
+  "project_id": "bb4a18e2-86c1-4e97-bfd3-63b2cd88bf11",
+  "url": "/__l5e/assets-v1/99ab27b0-a376-476a-8ea7-9de0bfa7da33/ss_minnow_iv.glb",
+  "r2_key": "a/v1/bb4a18e2-86c1-4e97-bfd3-63b2cd88bf11/99ab27b0-a376-476a-8ea7-9de0bfa7da33/ss_minnow_iv.glb",
   "original_filename": "ss_minnow_iv.glb",
-  "project_id": "3a5387f1-03ed-496f-ad94-31b0b0f7c458",
-  "r2_key": "a/v1/3a5387f1-03ed-496f-ad94-31b0b0f7c458/4bf72597-38c0-4c2b-b1d6-8a5c4c102cf0/ss_minnow_iv.glb",
-  "size": 14190736,
-  "url": "/__l5e/assets-v1/4bf72597-38c0-4c2b-b1d6-8a5c4c102cf0/ss_minnow_iv.glb",
-  "version": 1
+  "size": 2541812,
+  "content_type": "model/gltf-binary",
+  "created_at": "2026-09-05T09:51:18Z"
 }
