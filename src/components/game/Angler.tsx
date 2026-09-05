@@ -11,7 +11,7 @@ import { equippedRod, useRodStore } from "@/hooks/useRodStore";
 
 import { rodLook } from "@/lib/rodLooks";
 import { clampToWalkable, isInWater, player, resolvePlayerGround } from "@/hooks/usePlayer";
-import { boat } from "@/hooks/useBoat";
+import { boat, boatDeckWorld, moveOnDeck } from "@/hooks/useBoat";
 import { useWeather } from "@/hooks/useWeather";
 import { biteWindowFor } from "@/lib/fishRules";
 
@@ -371,7 +371,7 @@ export function Angler() {
     st.walk += dt * (speed > 0 ? 9 : 0);
 
     // ---- footstep sounds: satu bunyi tiap setengah siklus langkah --------
-    if (speed > 0 && !player.jumping && !player.swimming && !boat.riding) {
+    if (speed > 0 && !player.jumping && !player.swimming) {
       const phase = Math.floor(st.walk / Math.PI);
       if (phase !== st.stepPhase) {
         st.stepPhase = phase;
@@ -386,7 +386,7 @@ export function Angler() {
 
     // ---- body transform: stand at the player position -------------------
     if (body.current) {
-      const bob = boat.riding
+      const bob = boat.driving
         ? 0
         : player.swimming
         ? Math.sin(t * 2.4) * 0.16
@@ -422,13 +422,13 @@ export function Angler() {
         ? Math.sin(st.walk) * 0.75
         : 0;
     // seated driver pose: thighs swing forward so the angler sits on the bench
-    const seatSwing = boat.riding ? -1.45 : 0;
-    const targetL = boat.riding ? seatSwing : legSwing;
-    const targetR = boat.riding ? seatSwing : -legSwing;
+    const seatSwing = boat.driving ? -1.45 : 0;
+    const targetL = boat.driving ? seatSwing : legSwing;
+    const targetR = boat.driving ? seatSwing : -legSwing;
     if (legL.current) legL.current.rotation.x = damp(legL.current.rotation.x, targetL, 12, dt);
     if (legR.current) legR.current.rotation.x = damp(legR.current.rotation.x, targetR, 12, dt);
-    if (legL.current) legL.current.rotation.z = damp(legL.current.rotation.z, boat.riding ? 0.12 : 0, 12, dt);
-    if (legR.current) legR.current.rotation.z = damp(legR.current.rotation.z, boat.riding ? -0.12 : 0, 12, dt);
+    if (legL.current) legL.current.rotation.z = damp(legL.current.rotation.z, boat.driving ? 0.12 : 0, 12, dt);
+    if (legR.current) legR.current.rotation.z = damp(legR.current.rotation.z, boat.driving ? -0.12 : 0, 12, dt);
 
     let armR = -0.35; // shoulder pitch (+ = arm swings back, - = forward)
     let armRZ = 0; // right shoulder roll (+ = moves the hand inward toward center)
