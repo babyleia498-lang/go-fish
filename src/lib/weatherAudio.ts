@@ -97,9 +97,7 @@ let musicVolume = 0.12;
 let noiseBuffer: AudioBuffer | null = null;
 let started = false;
 let muted = false;
-let birdsLevel = 0; // 0..1 — probability driver for chirps
 let wavesLevel = 0; // desired wave level — set even before ctx exists
-let birdTimer: number | null = null;
 
 let reelInterval: number | null = null;
 let reelScrape: { src: AudioBufferSourceNode; gain: GainNode; filter: BiquadFilterNode } | null = null;
