@@ -296,10 +296,28 @@ export function Angler() {
     const fwd = (k["KeyW"] || k["ArrowUp"] ? 1 : 0) - (k["KeyS"] || k["ArrowDown"] ? 1 : 0);
     const side = (k["KeyD"] || k["ArrowRight"] ? 1 : 0) - (k["KeyA"] || k["ArrowLeft"] ? 1 : 0);
     const profileReady = useProfileStore.getState().profile !== null;
-    const canWalk = st.phase === "idle" && !boat.riding && profileReady;
+    const onDeck = boat.riding && !boat.driving;
+    const canWalk = st.phase === "idle" && (!boat.riding || onDeck) && profileReady;
     let speed = 0;
 
-    if (canWalk && (fwd !== 0 || side !== 0)) {
+    if (canWalk && onDeck && (fwd !== 0 || side !== 0)) {
+      // walking the deck: the step is expressed in world space, then clamped
+      // to the hull's deck box so the character rides along with the boat
+      const camYaw = Math.atan2(
+        state.camera.position.x - player.pos.x,
+        state.camera.position.z - player.pos.z,
+      );
+      const dirX = -Math.sin(camYaw) * fwd + Math.cos(camYaw) * side;
+      const dirZ = -Math.cos(camYaw) * fwd - Math.sin(camYaw) * side;
+      const len = Math.hypot(dirX, dirZ) || 1;
+      const nx = dirX / len;
+      const nz = dirZ / len;
+      const mv = WALK_SPEED * 0.75;
+      moveOnDeck(nx * mv * dt, nz * mv * dt);
+      boatDeckWorld(player.pos);
+      player.yaw = Math.atan2(nx, nz);
+      speed = 1;
+    } else if (canWalk && (fwd !== 0 || side !== 0)) {
       // camera forward projected on the ground plane
       const camYaw = Math.atan2(
         state.camera.position.x - player.pos.x,
