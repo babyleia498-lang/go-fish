@@ -231,14 +231,6 @@ export function initWeatherAudio() {
   swell2G.connect(swellAmp.gain);
   swell2.start();
 
-  // ---- bird chirp scheduler (clear / partly-cloudy ambience) ----
-  const scheduleBird = () => {
-    if (!ctx) return;
-    if (!muted && birdsLevel > 0 && Math.random() < birdsLevel) playChirp();
-    birdTimer = window.setTimeout(scheduleBird, 600 + Math.random() * 3800);
-  };
-  scheduleBird();
-
   // ---- ambient background music (C major pentatonic) ----
   musicGain = ctx.createGain();
   musicGain.gain.value = musicVolume;
