@@ -3,7 +3,15 @@ import { Html, useGLTF } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { waterHeight } from "./Ocean";
-import { boat, boatSeatWorld, BOAT_SCALE, BOAT_SEAT } from "@/hooks/useBoat";
+import {
+  boat,
+  boatDeckWorld,
+  boatSeatWorld,
+  nearHelm,
+  resetDeckOffset,
+  BOAT_SCALE,
+  BOAT_SEAT,
+} from "@/hooks/useBoat";
 import { isInWater, player } from "@/hooks/usePlayer";
 import { useGameStore } from "@/hooks/useGameStore";
 import { useBoatStore } from "@/hooks/useBoatStore";
