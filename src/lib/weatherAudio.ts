@@ -301,7 +301,9 @@ function playMusicPhrase() {
 /** background music volume 0..1 */
 export function setMusicVolume(v: number) {
   musicVolume = Math.max(0, Math.min(v, 1));
-  if (ctx && musicGain) musicGain.gain.setTargetAtTime(musicVolume, ctx.currentTime, 0.3);
+  if (ctx && musicGain) {
+    musicGain.gain.setTargetAtTime(weatherMusicMuted ? 0 : musicVolume, ctx.currentTime, 0.3);
+  }
 }
 
 export function resumeWeatherAudio() {
