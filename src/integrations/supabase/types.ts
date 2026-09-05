@@ -404,6 +404,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      ensure_starter_gear: { Args: { _wallet: string }; Returns: undefined }
       equip_bait: {
         Args: { _bait_id: string; _wallet: string }
         Returns: undefined
