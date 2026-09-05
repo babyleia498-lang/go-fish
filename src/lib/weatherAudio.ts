@@ -344,9 +344,6 @@ export function setWeatherAmbience(kind: string) {
     kind === "cerah" ? 0 :
     kind === "berawan" ? 0 :
     kind === "berkabut" ? 0 : 0.012;
-  birdsLevel =
-    kind === "cerah" ? 0.85 :
-    kind === "berawan" ? 0.3 : 0;
   if (!ctx || !wavesGain) return;
   wavesGain.gain.setTargetAtTime(wavesLevel, ctx.currentTime, 0.8);
 }
