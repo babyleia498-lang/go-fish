@@ -334,11 +334,29 @@ export function Boat() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       keys.current[e.code] = true;
-      if (e.code !== "KeyE" || e.repeat) return;
+      if (e.repeat) return;
+
+      // F = take / release the helm while aboard
+      if (e.code === "KeyF" && boat.riding) {
+        e.preventDefault();
+        if (boat.driving) {
+          boat.driving = false;
+          setMessage("Helm released. Walk the deck with W/A/S/D, F to steer again.");
+        } else if (nearHelm()) {
+          boat.driving = true;
+          setMessage("At the helm. W/S = throttle & reverse, A/D = steer, F to let go.");
+        } else {
+          setMessage("Walk back to the helm (stern of the boat) and press F.");
+        }
+        return;
+      }
+
+      if (e.code !== "KeyE") return;
       e.preventDefault();
       if (boat.riding) {
         // step off onto the port side of the hull
         boat.riding = false;
+        boat.driving = false;
         boat.speed = 0;
         const s = Math.sin(boat.yaw);
         const c = Math.cos(boat.yaw);
@@ -347,7 +365,9 @@ export function Boat() {
         setMessage("Left the boat. Press E near the boat to board again.");
       } else if (boat.near) {
         boat.riding = true;
-        setMessage("Aboard! W/S = throttle & reverse, A/D = steer, E = disembark.");
+        boat.driving = false;
+        resetDeckOffset();
+        setMessage("Aboard! W/A/S/D walks the deck, F takes the helm, E to leave.");
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
