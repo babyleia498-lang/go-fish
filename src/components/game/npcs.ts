@@ -30,6 +30,8 @@ export interface NpcDef {
   sellsRods?: boolean;
   /** the bait merchant sells baits */
   sellsBaits?: boolean;
+  /** the boat dealer sells hulls */
+  sellsBoats?: boolean;
   /** teaser line for shops that are not implemented yet */
   comingSoon?: string;
 }
@@ -125,7 +127,7 @@ export const NPCS: NpcDef[] = [
     talkDist: 6,
     face: "wink",
     trades: false,
-    comingSoon: "The hulls are still drying in the yard. Check back later.",
+    sellsBoats: true,
     outfit: {
       skin: "#d99a6c",
       shirt: "#1f4f7a",

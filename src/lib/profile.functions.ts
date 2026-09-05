@@ -42,7 +42,10 @@ export const ensureProfile = createServerFn({ method: "POST" })
       .eq("wallet_address", wallet)
       .maybeSingle();
     if (existing.error) throw new Error(existing.error.message);
-    if (existing.data) return existing.data;
+    if (existing.data) {
+      await supabaseAdmin.rpc("ensure_starter_gear", { _wallet: wallet });
+      return existing.data;
+    }
 
     let username = `angler_${shortId(wallet)}`;
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -55,7 +58,10 @@ export const ensureProfile = createServerFn({ method: "POST" })
         })
         .select("*")
         .single();
-      if (!created.error) return created.data;
+      if (!created.error) {
+        await supabaseAdmin.rpc("ensure_starter_gear", { _wallet: wallet });
+        return created.data;
+      }
       if (created.error.code !== "23505") throw new Error(created.error.message);
 
       // A concurrent request may have created this wallet's profile already.
@@ -64,7 +70,10 @@ export const ensureProfile = createServerFn({ method: "POST" })
         .select("*")
         .eq("wallet_address", wallet)
         .maybeSingle();
-      if (race.data) return race.data;
+      if (race.data) {
+        await supabaseAdmin.rpc("ensure_starter_gear", { _wallet: wallet });
+        return race.data;
+      }
 
       username = `angler_${shortId(wallet)}${Math.floor(Math.random() * 100000)}`;
     }

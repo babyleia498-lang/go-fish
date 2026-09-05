@@ -6,15 +6,14 @@ import { waterHeight } from "./Ocean";
 import { boat, boatSeatWorld, BOAT_SCALE, BOAT_SEAT } from "@/hooks/useBoat";
 import { isInWater, player } from "@/hooks/usePlayer";
 import { useGameStore } from "@/hooks/useGameStore";
-import boatUrl from "@/assets/boat.glb?url";
+import { useBoatStore } from "@/hooks/useBoatStore";
+import { boatLook } from "@/lib/boatModels";
 
-/** Target hull length in local units (before BOAT_SCALE). */
-const TARGET_LENGTH = 7.4;
-
-/** Uploaded low-poly boat, auto-centred, auto-scaled and laid bow-forward (+z). */
-function BoatModel() {
-  const { scene } = useGLTF(boatUrl);
+/** Equipped hull, auto-centred, auto-scaled and laid bow-forward (+z). */
+function BoatModel({ url, targetLength }: { url: string; targetLength: number }) {
+  const { scene } = useGLTF(url);
   const model = useMemo(() => {
+    const TARGET_LENGTH = targetLength;
     const root = scene.clone(true);
     root.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -54,12 +53,10 @@ function BoatModel() {
     // seat the rider on the interior floor
     BOAT_SEAT.y = wrapper.position.y + size.y * s * 0.14;
     return wrapper;
-  }, [scene]);
+  }, [scene, targetLength]);
 
   return <primitive object={model} />;
 }
-
-useGLTF.preload(boatUrl);
 
 
 const ACCEL = 16; // throttle acceleration
@@ -313,6 +310,8 @@ export function Boat() {
   const { camera } = useThree();
   const setMessage = useGameStore((s) => s.setMessage);
   const [prompt, setPrompt] = useState(false);
+  const equippedBoatId = useBoatStore((st) => st.equippedId);
+  const look = boatLook(equippedBoatId);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -369,7 +368,11 @@ export function Boat() {
       if (throttle > 0) boat.speed += ACCEL * dt;
       else if (throttle < 0) boat.speed -= REVERSE * dt;
       boat.speed *= Math.exp(-DRAG * dt);
-      boat.speed = THREE.MathUtils.clamp(boat.speed, -MAX_REVERSE, MAX_SPEED);
+      boat.speed = THREE.MathUtils.clamp(
+        boat.speed,
+        -MAX_REVERSE * boat.speedFactor,
+        MAX_SPEED * boat.speedFactor,
+      );
 
       // rudder authority scales with headway, like a real boat
       const authority = THREE.MathUtils.clamp(Math.abs(boat.speed) / 6, 0.15, 1);
@@ -431,7 +434,7 @@ export function Boat() {
     <group>
       <group ref={group} scale={BOAT_SCALE}>
         <Suspense fallback={null}>
-          <BoatModel />
+          <BoatModel key={look.id} url={look.url} targetLength={look.targetLength} />
         </Suspense>
 
 

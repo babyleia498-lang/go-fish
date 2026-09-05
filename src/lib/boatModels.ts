@@ -3,7 +3,8 @@ import motorBoat from "@/assets/motor_boat_iii_empty.glb.asset.json";
 import minnowIii from "@/assets/ss_minnow_iii.glb.asset.json";
 import minnowIv from "@/assets/ss_minnow_iv.glb.asset.json";
 import yachtIi from "@/assets/yacht_ii.glb.asset.json";
-import woodenDinghy from "@/assets/boat.glb.asset.json";
+// the CDN pointer for the starter dinghy is stale, so ship the bundled file
+import woodenDinghyUrl from "@/assets/boat.glb?url";
 
 export interface BoatLook {
   id: string;
@@ -16,7 +17,7 @@ export interface BoatLook {
 export const DEFAULT_BOAT_ID = "wooden_dinghy";
 
 export const BOAT_LOOKS: Record<string, BoatLook> = {
-  wooden_dinghy: { id: "wooden_dinghy", url: woodenDinghy.url, targetLength: 7.4 },
+  wooden_dinghy: { id: "wooden_dinghy", url: woodenDinghyUrl, targetLength: 7.4 },
   minnow: { id: "minnow", url: minnowIii.url, targetLength: 8.2 },
   reef_runner: { id: "reef_runner", url: minnowIv.url, targetLength: 8.8 },
   bow_raider: { id: "bow_raider", url: bowRaider.url, targetLength: 9.6 },

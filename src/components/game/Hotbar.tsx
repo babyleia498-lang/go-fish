@@ -6,6 +6,7 @@ import { useProfileStore } from "@/hooks/useProfileStore";
 import { getFishData, mutationFor, priceFor, rodOrDefault } from "@/lib/fishRules";
 import { useRodStore } from "@/hooks/useRodStore";
 import { useBaitStore } from "@/hooks/useBaitStore";
+import { useBoatStore } from "@/hooks/useBoatStore";
 import { baitOrDefault } from "@/lib/fishRules";
 import type { Rarity } from "@/lib/fishRules";
 import { useFishThumbnail } from "@/hooks/useFishThumbnail";
@@ -37,6 +38,7 @@ export function Hotbar() {
   const refreshRods = useRodStore((s) => s.refresh);
   const equippedBaitId = useBaitStore((s) => s.equippedId);
   const refreshBaits = useBaitStore((s) => s.refresh);
+  const refreshBoats = useBoatStore((s) => s.refresh);
   const rod = rodOrDefault(equippedId);
   const bait = baitOrDefault(equippedBaitId);
 
@@ -68,7 +70,8 @@ export function Hotbar() {
     void refresh();
     void refreshRods();
     void refreshBaits();
-  }, [proof, refresh, refreshRods, refreshBaits]);
+    void refreshBoats();
+  }, [proof, refresh, refreshRods, refreshBaits, refreshBoats]);
 
   useEffect(() => {
     if (!bagOpen || !proof) return;
