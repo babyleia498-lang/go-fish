@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "f58143a9-fe63-403a-88ef-067b287aa7b1",
-  "project_id": "9b2dd46c-1c2e-46cc-a4eb-a63a81a3f46b",
-  "url": "/__l5e/assets-v1/f58143a9-fe63-403a-88ef-067b287aa7b1/motor_boat_iii_empty.glb",
-  "r2_key": "a/v1/9b2dd46c-1c2e-46cc-a4eb-a63a81a3f46b/f58143a9-fe63-403a-88ef-067b287aa7b1/motor_boat_iii_empty.glb",
-  "original_filename": "motor_boat_iii_empty.glb",
-  "size": 12225764,
   "content_type": "model/gltf-binary",
-  "created_at": "2026-09-05T07:25:29Z"
+  "created_at": "2026-09-05T07:25:29Z",
+  "original_filename": "motor_boat_iii_empty.glb",
+  "project_id": "3a5387f1-03ed-496f-ad94-31b0b0f7c458",
+  "r2_key": "a/v1/3a5387f1-03ed-496f-ad94-31b0b0f7c458/f58143a9-fe63-403a-88ef-067b287aa7b1/motor_boat_iii_empty.glb",
+  "size": 12225764,
+  "url": "/__l5e/assets-v1/f58143a9-fe63-403a-88ef-067b287aa7b1/motor_boat_iii_empty.glb",
+  "version": 1
 }

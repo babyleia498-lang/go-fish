@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "6f1408fe-bddf-4947-b578-4385682f2974",
-  "project_id": "9b2dd46c-1c2e-46cc-a4eb-a63a81a3f46b",
-  "url": "/__l5e/assets-v1/6f1408fe-bddf-4947-b578-4385682f2974/220__bow__raider_power_boat_ss.glb",
-  "r2_key": "a/v1/9b2dd46c-1c2e-46cc-a4eb-a63a81a3f46b/6f1408fe-bddf-4947-b578-4385682f2974/220__bow__raider_power_boat_ss.glb",
-  "original_filename": "220__bow__raider_power_boat_ss.glb",
-  "size": 52157436,
   "content_type": "model/gltf-binary",
-  "created_at": "2026-09-05T07:25:23Z"
+  "created_at": "2026-09-05T07:25:23Z",
+  "original_filename": "220__bow__raider_power_boat_ss.glb",
+  "project_id": "3a5387f1-03ed-496f-ad94-31b0b0f7c458",
+  "r2_key": "a/v1/3a5387f1-03ed-496f-ad94-31b0b0f7c458/6f1408fe-bddf-4947-b578-4385682f2974/220__bow__raider_power_boat_ss.glb",
+  "size": 52157436,
+  "url": "/__l5e/assets-v1/6f1408fe-bddf-4947-b578-4385682f2974/220__bow__raider_power_boat_ss.glb",
+  "version": 1
 }
