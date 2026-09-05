@@ -57,9 +57,19 @@ export const ensureProfile = createServerFn({ method: "POST" })
         .single();
       if (!created.error) return created.data;
       if (created.error.code !== "23505") throw new Error(created.error.message);
-      username = `angler_${shortId(wallet)}${Math.floor(Math.random() * 1000)}`;
+
+      // A concurrent request may have created this wallet's profile already.
+      const race = await supabaseAdmin
+        .from("profiles")
+        .select("*")
+        .eq("wallet_address", wallet)
+        .maybeSingle();
+      if (race.data) return race.data;
+
+      username = `angler_${shortId(wallet)}${Math.floor(Math.random() * 100000)}`;
     }
     throw new Error("Could not create a profile. Please try again.");
+
   });
 
 const updateSchema = z.object({
