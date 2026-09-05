@@ -97,9 +97,8 @@ let musicVolume = 0.12;
 let noiseBuffer: AudioBuffer | null = null;
 let started = false;
 let muted = false;
-let birdsLevel = 0; // 0..1 — probability driver for chirps
 let wavesLevel = 0; // desired wave level — set even before ctx exists
-let birdTimer: number | null = null;
+let weatherMusicMuted = false; // mute melodic music during heavy rain/storm
 
 let reelInterval: number | null = null;
 let reelScrape: { src: AudioBufferSourceNode; gain: GainNode; filter: BiquadFilterNode } | null = null;
@@ -233,14 +232,6 @@ export function initWeatherAudio() {
   swell2G.connect(swellAmp.gain);
   swell2.start();
 
-  // ---- bird chirp scheduler (clear / partly-cloudy ambience) ----
-  const scheduleBird = () => {
-    if (!ctx) return;
-    if (!muted && birdsLevel > 0 && Math.random() < birdsLevel) playChirp();
-    birdTimer = window.setTimeout(scheduleBird, 600 + Math.random() * 3800);
-  };
-  scheduleBird();
-
   // ---- ambient background music (C major pentatonic) ----
   musicGain = ctx.createGain();
   musicGain.gain.value = musicVolume;
@@ -310,30 +301,8 @@ function playMusicPhrase() {
 /** background music volume 0..1 */
 export function setMusicVolume(v: number) {
   musicVolume = Math.max(0, Math.min(v, 1));
-  if (ctx && musicGain) musicGain.gain.setTargetAtTime(musicVolume, ctx.currentTime, 0.3);
-}
-
-/** short bird chirp: 1-3 quick descending sine blips */
-function playChirp() {
-  if (!ctx || !master) return;
-  const t0 = ctx.currentTime + 0.02;
-  const notes = 1 + Math.floor(Math.random() * 3);
-  const base = 2300 + Math.random() * 1800;
-  for (let i = 0; i < notes; i++) {
-    const t = t0 + i * (0.09 + Math.random() * 0.06);
-    const o = ctx.createOscillator();
-    o.type = "sine";
-    const f0 = base * (1 + Math.random() * 0.25);
-    o.frequency.setValueAtTime(f0, t);
-    o.frequency.exponentialRampToValueAtTime(f0 * 0.7, t + 0.07);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.035, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
-    o.connect(g);
-    g.connect(master);
-    o.start(t);
-    o.stop(t + 0.1);
+  if (ctx && musicGain) {
+    musicGain.gain.setTargetAtTime(weatherMusicMuted ? 0 : musicVolume, ctx.currentTime, 0.3);
   }
 }
 
