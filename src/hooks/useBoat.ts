@@ -6,8 +6,8 @@ import * as THREE from "three";
  * re-rendering.
  */
 export const boat = {
-  pos: new THREE.Vector3(-11.8, 0, 44),
-  yaw: 0,
+  pos: new THREE.Vector3(22.6, 0, 73.2),
+  yaw: 1.4,
   /** forward speed along the hull axis (units/s) */
   speed: 0,
   /** turn rate, used to bank the hull into the turn */
