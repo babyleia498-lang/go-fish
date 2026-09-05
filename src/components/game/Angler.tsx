@@ -11,7 +11,7 @@ import { equippedRod, useRodStore } from "@/hooks/useRodStore";
 
 import { rodLook } from "@/lib/rodLooks";
 import { clampToWalkable, isInWater, player, resolvePlayerGround } from "@/hooks/usePlayer";
-import { boat } from "@/hooks/useBoat";
+import { boat, boatDeckWorld, moveOnDeck } from "@/hooks/useBoat";
 import { useWeather } from "@/hooks/useWeather";
 import { biteWindowFor } from "@/lib/fishRules";
 
@@ -296,10 +296,28 @@ export function Angler() {
     const fwd = (k["KeyW"] || k["ArrowUp"] ? 1 : 0) - (k["KeyS"] || k["ArrowDown"] ? 1 : 0);
     const side = (k["KeyD"] || k["ArrowRight"] ? 1 : 0) - (k["KeyA"] || k["ArrowLeft"] ? 1 : 0);
     const profileReady = useProfileStore.getState().profile !== null;
-    const canWalk = st.phase === "idle" && !boat.riding && profileReady;
+    const onDeck = boat.riding && !boat.driving;
+    const canWalk = st.phase === "idle" && (!boat.riding || onDeck) && profileReady;
     let speed = 0;
 
-    if (canWalk && (fwd !== 0 || side !== 0)) {
+    if (canWalk && onDeck && (fwd !== 0 || side !== 0)) {
+      // walking the deck: the step is expressed in world space, then clamped
+      // to the hull's deck box so the character rides along with the boat
+      const camYaw = Math.atan2(
+        state.camera.position.x - player.pos.x,
+        state.camera.position.z - player.pos.z,
+      );
+      const dirX = -Math.sin(camYaw) * fwd + Math.cos(camYaw) * side;
+      const dirZ = -Math.cos(camYaw) * fwd - Math.sin(camYaw) * side;
+      const len = Math.hypot(dirX, dirZ) || 1;
+      const nx = dirX / len;
+      const nz = dirZ / len;
+      const mv = WALK_SPEED * 0.75;
+      moveOnDeck(nx * mv * dt, nz * mv * dt);
+      boatDeckWorld(player.pos);
+      player.yaw = Math.atan2(nx, nz);
+      speed = 1;
+    } else if (canWalk && (fwd !== 0 || side !== 0)) {
       // camera forward projected on the ground plane
       const camYaw = Math.atan2(
         state.camera.position.x - player.pos.x,
@@ -353,7 +371,7 @@ export function Angler() {
     st.walk += dt * (speed > 0 ? 9 : 0);
 
     // ---- footstep sounds: satu bunyi tiap setengah siklus langkah --------
-    if (speed > 0 && !player.jumping && !player.swimming && !boat.riding) {
+    if (speed > 0 && !player.jumping && !player.swimming) {
       const phase = Math.floor(st.walk / Math.PI);
       if (phase !== st.stepPhase) {
         st.stepPhase = phase;
@@ -368,7 +386,7 @@ export function Angler() {
 
     // ---- body transform: stand at the player position -------------------
     if (body.current) {
-      const bob = boat.riding
+      const bob = boat.driving
         ? 0
         : player.swimming
         ? Math.sin(t * 2.4) * 0.16
@@ -404,13 +422,13 @@ export function Angler() {
         ? Math.sin(st.walk) * 0.75
         : 0;
     // seated driver pose: thighs swing forward so the angler sits on the bench
-    const seatSwing = boat.riding ? -1.45 : 0;
-    const targetL = boat.riding ? seatSwing : legSwing;
-    const targetR = boat.riding ? seatSwing : -legSwing;
+    const seatSwing = boat.driving ? -1.45 : 0;
+    const targetL = boat.driving ? seatSwing : legSwing;
+    const targetR = boat.driving ? seatSwing : -legSwing;
     if (legL.current) legL.current.rotation.x = damp(legL.current.rotation.x, targetL, 12, dt);
     if (legR.current) legR.current.rotation.x = damp(legR.current.rotation.x, targetR, 12, dt);
-    if (legL.current) legL.current.rotation.z = damp(legL.current.rotation.z, boat.riding ? 0.12 : 0, 12, dt);
-    if (legR.current) legR.current.rotation.z = damp(legR.current.rotation.z, boat.riding ? -0.12 : 0, 12, dt);
+    if (legL.current) legL.current.rotation.z = damp(legL.current.rotation.z, boat.driving ? 0.12 : 0, 12, dt);
+    if (legR.current) legR.current.rotation.z = damp(legR.current.rotation.z, boat.driving ? -0.12 : 0, 12, dt);
 
     let armR = -0.35; // shoulder pitch (+ = arm swings back, - = forward)
     let armRZ = 0; // right shoulder roll (+ = moves the hand inward toward center)

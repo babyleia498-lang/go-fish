@@ -3,7 +3,15 @@ import { Html, useGLTF } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { waterHeight } from "./Ocean";
-import { boat, boatSeatWorld, BOAT_SCALE, BOAT_SEAT } from "@/hooks/useBoat";
+import {
+  boat,
+  boatDeckWorld,
+  boatSeatWorld,
+  nearHelm,
+  resetDeckOffset,
+  BOAT_SCALE,
+  BOAT_SEAT,
+} from "@/hooks/useBoat";
 import { isInWater, player } from "@/hooks/usePlayer";
 import { useGameStore } from "@/hooks/useGameStore";
 import { useBoatStore } from "@/hooks/useBoatStore";
@@ -11,7 +19,7 @@ import { boatLook } from "@/lib/boatModels";
 
 /** Equipped hull, auto-centred, auto-scaled and laid bow-forward (+z). */
 function BoatModel({ url, targetLength }: { url: string; targetLength: number }) {
-  const { scene } = useGLTF(url);
+  const { scene } = useGLTF(url, "/draco/");
   const model = useMemo(() => {
     const TARGET_LENGTH = targetLength;
     const root = scene.clone(true);
@@ -51,7 +59,17 @@ function BoatModel({ url, targetLength }: { url: string; targetLength: number })
     // keep the hull bottom just above the waterline so the sea never shows inside
     wrapper.position.y = -size.y * s * 0.05;
     // seat the rider on the interior floor
-    BOAT_SEAT.y = wrapper.position.y + size.y * s * 0.14;
+    const deckY = wrapper.position.y + size.y * s * 0.14;
+    BOAT_SEAT.y = deckY;
+    // walkable deck box measured from the hull footprint (keep clear of the rails)
+    const beam = (alongX ? size.z : size.x) * s;
+    const hullLen = TARGET_LENGTH;
+    boat.deck.halfX = Math.max(0.5, (beam / 2) * 0.55) / BOAT_SCALE;
+    boat.deck.halfZ = Math.max(0.9, (hullLen / 2) * 0.6) / BOAT_SCALE;
+    boat.deck.y = deckY;
+    // helm sits toward the stern; keep it inside the deck box
+    BOAT_SEAT.z = -boat.deck.halfZ * 0.55;
+    resetDeckOffset();
     return wrapper;
   }, [scene, targetLength]);
 
@@ -316,11 +334,29 @@ export function Boat() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       keys.current[e.code] = true;
-      if (e.code !== "KeyE" || e.repeat) return;
+      if (e.repeat) return;
+
+      // F = take / release the helm while aboard
+      if (e.code === "KeyF" && boat.riding) {
+        e.preventDefault();
+        if (boat.driving) {
+          boat.driving = false;
+          setMessage("Helm released. Walk the deck with W/A/S/D, F to steer again.");
+        } else if (nearHelm()) {
+          boat.driving = true;
+          setMessage("At the helm. W/S = throttle & reverse, A/D = steer, F to let go.");
+        } else {
+          setMessage("Walk back to the helm (stern of the boat) and press F.");
+        }
+        return;
+      }
+
+      if (e.code !== "KeyE") return;
       e.preventDefault();
       if (boat.riding) {
         // step off onto the port side of the hull
         boat.riding = false;
+        boat.driving = false;
         boat.speed = 0;
         const s = Math.sin(boat.yaw);
         const c = Math.cos(boat.yaw);
@@ -329,7 +365,9 @@ export function Boat() {
         setMessage("Left the boat. Press E near the boat to board again.");
       } else if (boat.near) {
         boat.riding = true;
-        setMessage("Aboard! W/S = throttle & reverse, A/D = steer, E = disembark.");
+        boat.driving = false;
+        resetDeckOffset();
+        setMessage("Aboard! W/A/S/D walks the deck, F takes the helm, E to leave.");
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
@@ -359,8 +397,8 @@ export function Boat() {
       Math.hypot(player.pos.x - seat.x, player.pos.z - seat.z) < BOARD_DIST;
     if (boat.near !== prompt) setPrompt(boat.near);
 
-    // ---- steering ------------------------------------------------------
-    if (boat.riding) {
+    // ---- steering (only with hands on the helm) -------------------------
+    if (boat.driving) {
       const throttle =
         (k["KeyW"] || k["ArrowUp"] ? 1 : 0) - (k["KeyS"] || k["ArrowDown"] ? 1 : 0);
       const steer = (k["KeyA"] || k["ArrowLeft"] ? 1 : 0) - (k["KeyD"] || k["ArrowRight"] ? 1 : 0);
@@ -419,12 +457,20 @@ export function Boat() {
     }
 
 
-    // ---- carry the rider ----------------------------------------------
+    // ---- carry the rider ------------------------------------------------
     if (boat.riding) {
-      boatSeatWorld(seat);
-      player.pos.copy(seat);
-      player.yaw = boat.yaw;
-      player.moving = false;
+      if (boat.driving) {
+        // hands on the wheel: locked to the helm, facing the bow
+        resetDeckOffset();
+        boatSeatWorld(seat);
+        player.pos.copy(seat);
+        player.yaw = boat.yaw;
+        player.moving = false;
+      } else {
+        // free on deck: Angler writes boat.offset, the hull carries it
+        boatDeckWorld(seat);
+        player.pos.copy(seat);
+      }
       player.swimming = false;
       void camera;
     }
