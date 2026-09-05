@@ -41,6 +41,30 @@ export type Database = {
         }
         Relationships: []
       }
+      boat_tiers: {
+        Row: {
+          id: string
+          name: string
+          price_coins: number
+          sort_order: number
+          speed_percent: number
+        }
+        Insert: {
+          id: string
+          name: string
+          price_coins?: number
+          sort_order?: number
+          speed_percent?: number
+        }
+        Update: {
+          id?: string
+          name?: string
+          price_coins?: number
+          sort_order?: number
+          speed_percent?: number
+        }
+        Relationships: []
+      }
       fish_inventory_items: {
         Row: {
           caught_at: string
@@ -174,6 +198,42 @@ export type Database = {
           },
           {
             foreignKeyName: "player_baits_wallet_address_fkey"
+            columns: ["wallet_address"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["wallet_address"]
+          },
+        ]
+      }
+      player_boats: {
+        Row: {
+          boat_id: string
+          equipped: boolean
+          purchased_at: string
+          wallet_address: string
+        }
+        Insert: {
+          boat_id: string
+          equipped?: boolean
+          purchased_at?: string
+          wallet_address: string
+        }
+        Update: {
+          boat_id?: string
+          equipped?: boolean
+          purchased_at?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_boats_boat_id_fkey"
+            columns: ["boat_id"]
+            isOneToOne: false
+            referencedRelation: "boat_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_boats_wallet_address_fkey"
             columns: ["wallet_address"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -379,6 +439,31 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      buy_boat: {
+        Args: { _boat_id: string; _wallet: string }
+        Returns: {
+          avatar_url: string | null
+          coins: number
+          created_at: string
+          display_name: string
+          fish_common: number
+          fish_epic: number
+          fish_legendary: number
+          fish_mythic: number
+          fish_rare: number
+          level: number
+          updated_at: string
+          username: string
+          wallet_address: string
+          xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       buy_rod: {
         Args: { _rod_id: string; _wallet: string }
         Returns: {
@@ -409,6 +494,10 @@ export type Database = {
         Args: { _bait_id: string; _wallet: string }
         Returns: undefined
       }
+      equip_boat: {
+        Args: { _boat_id: string; _wallet: string }
+        Returns: undefined
+      }
       equip_rod: {
         Args: { _rod_id: string; _wallet: string }
         Returns: undefined
@@ -422,6 +511,17 @@ export type Database = {
           name: string
           price_coins: number
           purchased_at: string
+        }[]
+      }
+      get_player_boats: {
+        Args: { _wallet: string }
+        Returns: {
+          boat_id: string
+          equipped: boolean
+          name: string
+          price_coins: number
+          purchased_at: string
+          speed_percent: number
         }[]
       }
       get_player_rods: {
