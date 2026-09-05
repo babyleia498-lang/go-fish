@@ -98,6 +98,7 @@ let noiseBuffer: AudioBuffer | null = null;
 let started = false;
 let muted = false;
 let wavesLevel = 0; // desired wave level — set even before ctx exists
+let weatherMusicMuted = false; // mute melodic music during heavy rain/storm
 
 let reelInterval: number | null = null;
 let reelScrape: { src: AudioBufferSourceNode; gain: GainNode; filter: BiquadFilterNode } | null = null;
