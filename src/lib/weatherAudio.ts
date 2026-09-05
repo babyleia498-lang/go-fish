@@ -303,30 +303,6 @@ export function setMusicVolume(v: number) {
   if (ctx && musicGain) musicGain.gain.setTargetAtTime(musicVolume, ctx.currentTime, 0.3);
 }
 
-/** short bird chirp: 1-3 quick descending sine blips */
-function playChirp() {
-  if (!ctx || !master) return;
-  const t0 = ctx.currentTime + 0.02;
-  const notes = 1 + Math.floor(Math.random() * 3);
-  const base = 2300 + Math.random() * 1800;
-  for (let i = 0; i < notes; i++) {
-    const t = t0 + i * (0.09 + Math.random() * 0.06);
-    const o = ctx.createOscillator();
-    o.type = "sine";
-    const f0 = base * (1 + Math.random() * 0.25);
-    o.frequency.setValueAtTime(f0, t);
-    o.frequency.exponentialRampToValueAtTime(f0 * 0.7, t + 0.07);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.035, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
-    o.connect(g);
-    g.connect(master);
-    o.start(t);
-    o.stop(t + 0.1);
-  }
-}
-
 export function resumeWeatherAudio() {
   initWeatherAudio();
   ensureSamples();
