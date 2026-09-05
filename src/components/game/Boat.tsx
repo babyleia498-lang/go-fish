@@ -397,8 +397,8 @@ export function Boat() {
       Math.hypot(player.pos.x - seat.x, player.pos.z - seat.z) < BOARD_DIST;
     if (boat.near !== prompt) setPrompt(boat.near);
 
-    // ---- steering ------------------------------------------------------
-    if (boat.riding) {
+    // ---- steering (only with hands on the helm) -------------------------
+    if (boat.driving) {
       const throttle =
         (k["KeyW"] || k["ArrowUp"] ? 1 : 0) - (k["KeyS"] || k["ArrowDown"] ? 1 : 0);
       const steer = (k["KeyA"] || k["ArrowLeft"] ? 1 : 0) - (k["KeyD"] || k["ArrowRight"] ? 1 : 0);
@@ -457,12 +457,20 @@ export function Boat() {
     }
 
 
-    // ---- carry the rider ----------------------------------------------
+    // ---- carry the rider ------------------------------------------------
     if (boat.riding) {
-      boatSeatWorld(seat);
-      player.pos.copy(seat);
-      player.yaw = boat.yaw;
-      player.moving = false;
+      if (boat.driving) {
+        // hands on the wheel: locked to the helm, facing the bow
+        resetDeckOffset();
+        boatSeatWorld(seat);
+        player.pos.copy(seat);
+        player.yaw = boat.yaw;
+        player.moving = false;
+      } else {
+        // free on deck: Angler writes boat.offset, the hull carries it
+        boatDeckWorld(seat);
+        player.pos.copy(seat);
+      }
       player.swimming = false;
       void camera;
     }
